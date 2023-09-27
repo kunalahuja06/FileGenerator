@@ -1,0 +1,26 @@
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
+  <Metadata>
+    <Identity Id="FileGenerator.614e1abc-8bd2-48b0-82ca-9be88fe267a2" Version="1.0" Language="en-US" Publisher="Kunal Ahuja" />
+    <DisplayName>FileGenerator</DisplayName>
+    <Description xml:space="preserve">Extension to generate design pattern files.
+
+To generate  files:
+Go to Tools-&gt;Generate Design Pattern Extension </Description>
+    <Tags>DesignPattern</Tags>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" Version="[4.5,)" />
+  </Dependencies>
+  <Prerequisites>
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />
+  </Prerequisites>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.VsPackage" Path="FileGenerator.pkgdef" />
+    <Asset Type="Microsoft.VisualStudio.ToolboxControl" Path="FileGenerator.pkgdef" />
+  </Assets>
+</PackageManifest>
