@@ -1,8 +1,12 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
   <Metadata>
-    <Identity Id="FileGenerator.614e1abc-8bd2-48b0-82ca-9be88fe267a2" Version="1.0" Language="en-US" Publisher="Kunal Ahuja" />
+    <Identity Id="FileGenerator.614e1abc-8bd2-48b0-82ca-9be88fe267a2" Version="1.1" Language="en-US" Publisher="Kunal Ahuja" />
     <DisplayName>FileGenerator</DisplayName>
-    <Description>Empty VSIX Project.</Description>
+    <Description xml:space="preserve">Extension to generate design pattern files.
+
+To generate  files:
+Go to Tools-&gt;Generate Design Pattern Extension </Description>
+    <Tags>DesignPattern</Tags>
   </Metadata>
   <Installation>
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
