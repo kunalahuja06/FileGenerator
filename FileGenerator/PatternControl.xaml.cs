@@ -24,10 +24,11 @@ namespace FileGenerator
         {
             ListBox listBox = (ListBox)sender;
             ListBoxItem item = (ListBoxItem)listBox.SelectedItem;
+            string uid = item.Uid;
             if (item != null)
             {
                 _parentWindow.Close();
-                PathControl PathControl = new PathControl(item.Content.ToString());
+                PathControl PathControl = new PathControl(item.Uid);
                 Window window = new Window();
                 window.Width = 650;
                 window.Height = 150;

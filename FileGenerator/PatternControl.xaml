@@ -8,8 +8,8 @@
              >
     <Grid>
         <ListBox SelectionChanged="ListBox_SelectionChanged" Loaded="UserControl_Loaded">
-            <ListBoxItem Content="Repository Pattern" Padding="5,10,5,10" VerticalAlignment="Center" />
-            <ListBoxItem Content="Unit of Work Pattern" Padding="5,10,5,10" VerticalAlignment="Center" />
+            <ListBoxItem Content="Repository Pattern" x:Uid="RepositoryPattern" Padding="5,10,5,10" VerticalAlignment="Center" />
+            <ListBoxItem Content="Unit of Work Pattern" x:Uid="UnitOfWorkPattern" Padding="5,10,5,10" VerticalAlignment="Center" />
         </ListBox>
     </Grid>
 </UserControl>
