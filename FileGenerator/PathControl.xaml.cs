@@ -1,4 +1,8 @@
-﻿using System;
+﻿using FileGenerator.Core.Contracts;
+using FileGenerator.Core.Services;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,35 +16,25 @@ namespace FileGenerator
     {
         private string _pattern;
 
-        private string _path;
-
-        public string Path
-        {
-            get
-            {
-                return this._path;
-            }
-            set
-            {
-                this._path = value;
-            }
-        }
-
+        private readonly IFolderService _folderService;
+        private readonly HttpClient _httpClient;
         public PathControl(string pattern)
         {
+            _httpClient = new HttpClient();
+            _folderService = new FolderService(_httpClient);
             InitializeComponent();
             _pattern = pattern;
         }
 
-        private void OkButton_Click(object sender, RoutedEventArgs e)
+        private async void OkButton_Click(object sender, RoutedEventArgs e)
         {
+            string path = txtPath.Text;
 
-            string userInput = txtPath.Text;
-
-            if(!string.IsNullOrEmpty(userInput))
+            if (!string.IsNullOrEmpty(path))
             {
-                bool generated =  CreateFolder(userInput);
-                if (generated)
+                path = Path.Combine(path, _pattern);
+                bool generateFolder = await CreateFolder(path, _pattern);
+                if (generateFolder)
                 {
                     MessageBox.Show("Files generated successfully");
                     CloseWindow();
@@ -52,188 +46,20 @@ namespace FileGenerator
             }
         }
 
-        private bool CreateFolder(string path)
+        private async Task<bool> CreateFolder(string path, string pattern)
         {
-
-            if (_pattern == "Repository Pattern")
+            bool generated = false;
+            if (!Directory.Exists(path))
             {
-                bool created = CreateRepositoryFolder(path);
-                return created;
-            }
-            else if (_pattern == "Unit of Work Pattern")
-            {
-                bool created = CreateUnitOfWorkFolder(path);
-                return created;
+                Directory.CreateDirectory(path);
+                generated = await _folderService.GetPatternFiles(pattern, path);
+                return generated;
             }
             else
             {
-                MessageBox.Show("Please select a pattern");
-                return false;
-            }
-
-        }
-
-        private bool CreateUnitOfWorkFolder(string path)
-        {
-            string folderName = "UnitOfWork";
-            string folderPath = System.IO.Path.Combine(path, folderName);
-            try
-            {
-                if (!System.IO.Directory.Exists(folderPath))
-                {
-                    System.IO.Directory.CreateDirectory(folderPath);
-                    bool generated = GenerateUnitOfWorkFiles(folderPath);
-                    return generated;
-                }
-                else
-                {
-                    MessageBox.Show("Folder already exists");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                return false;
-            }
-        }
-
-        private bool CreateRepositoryFolder(string path)
-        {
-            string folderName = "Repository";
-            string folderPath = System.IO.Path.Combine(path, folderName);
-            try
-            {
-                if (!System.IO.Directory.Exists(folderPath))
-                {
-                    System.IO.Directory.CreateDirectory(folderPath);
-                    bool generated = GenerateRepositoryFiles(folderPath);
-                    return generated;
-                }
-                else
-                {
-                    MessageBox.Show("Folder already exists");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                return false;
-            }
-        }
-
-        private bool GenerateRepositoryFiles(string path)
-        {
-            try
-            {
-                string[] files = new string[] { "IRepository.cs", "Repository.cs" };
-                foreach (string file in files)
-                {
-                    string filePath = System.IO.Path.Combine(path, file);
-                    if (!System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.WriteAllText(filePath, GetRepositoryFileContent(file));
-                    }
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                return false;
-            }
-        }
-
-        private string GetRepositoryFileContent(string fileName)
-        {
-            string content = string.Empty;
-            switch (fileName)
-            {
-                case "IRepository.cs":
-                    content = @"using System;"
-                    + Environment.NewLine + Environment.NewLine + @"namespace YOUR_NAMESPACE"
-                    + Environment.NewLine + @"{"
-                    + Environment.NewLine + @"    public interface IRepository<T> where T : class"
-                    + Environment.NewLine + @"    {"
-                    + Environment.NewLine + @"    }"
-                    + Environment.NewLine + @"}";
-                    break;
-
-                case "Repository.cs":
-                    content = @"using System;"
-                    + Environment.NewLine + Environment.NewLine + @"namespace YOUR_NAMESPACE"
-                    + Environment.NewLine + @"{"
-                    + Environment.NewLine + @"    public class Repository<T> : IRepository<T> where T : class"
-                    + Environment.NewLine + @"    {"
-                    + Environment.NewLine + @"         public Repository()"
-                    + Environment.NewLine + @"         {"
-                    + Environment.NewLine + @"             // constructor code goes here"
-                    + Environment.NewLine + @"         }"
-                    + Environment.NewLine + @"    }"
-                    + Environment.NewLine + @"}";
-                    break;
-            }
-            return content;
-        }
-
-        private bool GenerateUnitOfWorkFiles(string path)
-        {
-            try
-            {
-                string[] files = new string[] { "IUnitOfWork.cs", "UnitOfWork.cs" };
-                foreach (string file in files)
-                {
-                    string filePath = System.IO.Path.Combine(path, file);
-                    if (!System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.WriteAllText(filePath, GetUnitOfWorkFileContent(file));
-                    }
-                }
-                return true;
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                return false;
-            }
-        }
-
-        private string GetUnitOfWorkFileContent(string file)
-        {
-            string content = string.Empty;
-            switch (file)
-            {
-                case "IUnitOfWork.cs":
-                    content = @"using System;"
-                    + Environment.NewLine + Environment.NewLine + @"namespace YOUR_NAMESPACE"
-                    + Environment.NewLine + @"{"
-                    + Environment.NewLine + @"    public interface IUnitOfWork : IDisposable"
-                    + Environment.NewLine + @"    {"
-                    + Environment.NewLine + @"    }"
-                    + Environment.NewLine + @"}";
-                    break;
-
-                case "UnitOfWork.cs":
-                    content = @"using System;"
-                    + Environment.NewLine + Environment.NewLine + @"namespace YOUR_NAMESPACE"
-                    + Environment.NewLine + @"{"
-                    + Environment.NewLine + @"    public class UnitOfWork : IUnitOfWork"
-                    + Environment.NewLine + @"    {"
-                    + Environment.NewLine + @"         public UnitOfWork()"
-                    + Environment.NewLine + @"         {"
-                    + Environment.NewLine + @"             // constructor code goes here"
-                    + Environment.NewLine + @"         }"
-                    + Environment.NewLine + Environment.NewLine + @"         public void Dispose()"
-                    + Environment.NewLine + @"         {"
-                    + Environment.NewLine + @"             // dispose code goes here"
-                    + Environment.NewLine + @"         }"
-                    + Environment.NewLine + @"    }"
-                    + Environment.NewLine + @"}";
-                    break;
-            }
-            return content;
+                MessageBox.Show("Folder already exists");
+                return generated;
+            }  
         }
 
         private void CloseWindow()
